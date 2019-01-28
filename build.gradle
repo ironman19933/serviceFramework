@@ -1,13 +1,13 @@
 buildscript {
-	ext {
-		springBootVersion = '1.5.19.RELEASE'
-	}
-	repositories {
-		mavenCentral()
-	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-	}
+    ext {
+        springBootVersion = '1.5.19.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
 }
 
 plugins {
@@ -25,17 +25,18 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	/*implementation 'org.springframework.boot:spring-boot-starter-security'*/
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    /*implementation 'org.springframework.boot:spring-boot-starter-security'*/
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-amqp'
-	implementation 'mysql:mysql-connector-java'
+    compile 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'mysql:mysql-connector-java'
 
     compile "org.mapstruct:mapstruct-jdk8:1.2.0.Final"
     compileOnly 'org.projectlombok:lombok:1.18.4'
@@ -46,5 +47,5 @@ dependencies {
     apt "org.mapstruct:mapstruct-processor:1.2.0.Final", 'org.projectlombok:lombok:1.18.4'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.springframework.security:spring-security-test'
 }

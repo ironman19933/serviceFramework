@@ -7,6 +7,7 @@ import com.abhinav.learn_spring.models.responses.StatusResponse;
 import com.abhinav.learn_spring.services.AppConfigService;
 import com.abhinav.learn_spring.services.RabbitService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,6 +30,7 @@ public class AppConfigController {
         return finalResponse;
     }
 
+    @Cacheable(value = "configs")
     @RequestMapping(value = "/getConfig", method = RequestMethod.GET)
     public AppUpdateConfigResponse getConfig() {
         AppUpdateConfigResponse finalResponse = new AppUpdateConfigResponse();
