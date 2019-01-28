@@ -5,6 +5,7 @@ import com.abhinav.learn_spring.models.entries.AppUpdateConfigEntry;
 import com.abhinav.learn_spring.models.responses.AppUpdateConfigResponse;
 import com.abhinav.learn_spring.models.responses.StatusResponse;
 import com.abhinav.learn_spring.services.AppConfigService;
+import com.abhinav.learn_spring.services.RabbitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 public class AppConfigController {
     @Autowired
     private AppConfigService appConfigService;
+    @Autowired
+    private RabbitService rabbitService;
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public AppUpdateConfigResponse persistUser(@RequestBody AppUpdateConfigEntry request) {
@@ -36,6 +39,7 @@ public class AppConfigController {
         } catch (Exception e) {
             finalResponse.setStatus(new StatusResponse(13, "Error Occurred", StatusResponse.Type.ERROR, 1L));
         }
+        //rabbitService.sendMessage("learn_spring", "learn_spring_routing_key", finalResponse);
         return finalResponse;
     }
 

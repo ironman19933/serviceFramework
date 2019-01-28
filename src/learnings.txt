@@ -1,0 +1,5 @@
+1/ SpringBootApplication annotation takes care of all the things based on the dependencies you have added
+ for eg i have added the spring jpa starter, so we need not define to @EnableJpaRepository(basePackages="package path")
+ and @EntityScan(basePackages), it automatically searches for the packages and subpackages of the project present springBootApplication path.
+
+2/ However we can explicitly define the same by the above mentioned two annotations

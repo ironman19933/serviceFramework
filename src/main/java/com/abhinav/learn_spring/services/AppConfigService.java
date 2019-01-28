@@ -19,6 +19,8 @@ import java.util.stream.StreamSupport;
 public class AppConfigService extends BaseService<AppUpdateConfigEntity, AppUpdateConfigEntry> {
     @Autowired
     private AppUpdateConfigRepository appUpdateConfigRepository;
+    @Autowired
+    private RabbitService rabbitService;
 
     private AppConfigMapper appConfigMapper = Mappers.getMapper(AppConfigMapper.class);
 
@@ -32,6 +34,7 @@ public class AppConfigService extends BaseService<AppUpdateConfigEntity, AppUpda
         if (CollectionUtils.isEmpty(configs)) {
             return null;
         } else {
+            rabbitService.sendMessage("learn_spring", "learn_spring_routing_key", convertToEntry(configs.get(0)));
             return convertToEntry(configs.get(0));
         }
     }
