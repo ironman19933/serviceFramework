@@ -45,6 +45,20 @@ public class AppConfigController {
         return finalResponse;
     }
 
+    @RequestMapping(value = "/getConfigByClient", method = RequestMethod.GET)
+    public AppUpdateConfigResponse getConfigByClient() {
+        AppUpdateConfigResponse finalResponse = new AppUpdateConfigResponse();
+        try {
+            AppUpdateConfigEntry entry = appConfigService.getConfigByEntry();
+            finalResponse.setAppUpdateConfigEntry(entry);
+            finalResponse.setStatus(new StatusResponse(12, "App Config is retrieved successfully", StatusResponse.Type.SUCCESS, 1L));
+        } catch (Exception e) {
+            finalResponse.setStatus(new StatusResponse(13, "Error Occurred", StatusResponse.Type.ERROR, 1L));
+        }
+        //rabbitService.sendMessage("learn_spring", "learn_spring_routing_key", finalResponse);
+        return finalResponse;
+    }
+
     @RequestMapping(value = "/getConfigByVersionNo/{versionNo}", method = RequestMethod.GET)
     public AppUpdateConfigEntity getConfigByEntity(@PathVariable Long versionNo) {
         return appConfigService.getConfigByVersionNo(versionNo);

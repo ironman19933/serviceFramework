@@ -4,11 +4,13 @@ import com.abhinav.learn_spring.mappers.AppConfigMapper;
 import com.abhinav.learn_spring.models.entities.AppUpdateConfigEntity;
 import com.abhinav.learn_spring.models.entries.AppUpdateConfigEntry;
 import com.abhinav.learn_spring.models.repositories.AppUpdateConfigRepository;
+import com.abhinav.learn_spring.models.responses.AppUpdateConfigResponse;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +23,8 @@ public class AppConfigService extends BaseService<AppUpdateConfigEntity, AppUpda
     private AppUpdateConfigRepository appUpdateConfigRepository;
     @Autowired
     private RabbitService rabbitService;
+    @Autowired
+    private RestTemplate restTemplate;
 
     private AppConfigMapper appConfigMapper = Mappers.getMapper(AppConfigMapper.class);
 
@@ -39,9 +43,14 @@ public class AppConfigService extends BaseService<AppUpdateConfigEntity, AppUpda
         }
     }
 
+    public AppUpdateConfigEntry getConfigByEntry() {
+        return restTemplate.getForObject("http://localhost:7076/getConfig", AppUpdateConfigResponse.class).getAppUpdateConfigEntry();
+    }
+
     public AppUpdateConfigEntity getConfigByVersionNo(Long versionNo) {
         return appUpdateConfigRepository.findByVersionNo(versionNo);
     }
+
 
     @Override
     public AppUpdateConfigEntry convertToEntry(AppUpdateConfigEntity entity) {

@@ -1,4 +1,4 @@
-package config;
+package com.abhinav.learn_spring.config;
 
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
