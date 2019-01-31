@@ -1,5 +1,7 @@
 package com.abhinav.learn_spring.controllers;
 
+import com.abhinav.learn_spring.codes.ErrorCodes;
+import com.abhinav.learn_spring.codes.SuccessCodes;
 import com.abhinav.learn_spring.models.entities.AppUpdateConfigEntity;
 import com.abhinav.learn_spring.models.entries.AppUpdateConfigEntry;
 import com.abhinav.learn_spring.models.responses.AppUpdateConfigResponse;
@@ -23,9 +25,9 @@ public class AppConfigController {
         try {
             AppUpdateConfigEntry entry = appConfigService.create(request);
             finalResponse.setAppUpdateConfigEntry(entry);
-            finalResponse.setStatus(new StatusResponse(12, "App Config is saved successfully", StatusResponse.Type.SUCCESS, 1L));
+            finalResponse.setStatus(new StatusResponse(SuccessCodes.APP_CONFIG_CREATED_SUCCESSFULLY, 1L));
         } catch (Exception e) {
-            finalResponse.setStatus(new StatusResponse(13, "Error Occurred", StatusResponse.Type.ERROR, 1L));
+            finalResponse.setStatus(new StatusResponse(ErrorCodes.GENERIC_ERROR_OCCURRED, 1L));
         }
         return finalResponse;
     }
@@ -41,7 +43,7 @@ public class AppConfigController {
         } catch (Exception e) {
             finalResponse.setStatus(new StatusResponse(13, "Error Occurred", StatusResponse.Type.ERROR, 1L));
         }
-        //rabbitService.sendMessage("learn_spring", "learn_spring_routing_key", finalResponse);
+        rabbitService.sendMessage("learn_spring", "learn_spring_routing_key", finalResponse);
         return finalResponse;
     }
 
@@ -55,7 +57,7 @@ public class AppConfigController {
         } catch (Exception e) {
             finalResponse.setStatus(new StatusResponse(13, "Error Occurred", StatusResponse.Type.ERROR, 1L));
         }
-        //rabbitService.sendMessage("learn_spring", "learn_spring_routing_key", finalResponse);
+        rabbitService.sendMessage("learn_spring", "learn_spring_routing_key", finalResponse);
         return finalResponse;
     }
 

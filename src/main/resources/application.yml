@@ -28,3 +28,8 @@ logging:
       apache:
         http: DEBUG
 
+axle:
+  client:
+    id: StarMSFe-G4DsKI
+    secret: 2SXhLxG7prabkWl2rHQptbpIyt8XH9yg
+
