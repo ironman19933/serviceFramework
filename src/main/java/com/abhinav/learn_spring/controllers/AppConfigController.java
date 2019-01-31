@@ -7,17 +7,32 @@ import com.abhinav.learn_spring.models.entries.AppUpdateConfigEntry;
 import com.abhinav.learn_spring.models.responses.AppUpdateConfigResponse;
 import com.abhinav.learn_spring.models.responses.StatusResponse;
 import com.abhinav.learn_spring.services.AppConfigService;
+import com.abhinav.learn_spring.services.BaseService;
 import com.abhinav.learn_spring.services.RabbitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-public class AppConfigController {
+@RequestMapping("/app")
+public class AppConfigController extends BaseController<AppUpdateConfigResponse, AppUpdateConfigEntity, AppUpdateConfigEntry> {
     @Autowired
     private AppConfigService appConfigService;
     @Autowired
     private RabbitService rabbitService;
+
+    @Override
+    protected AppUpdateConfigResponse createResponse(AppUpdateConfigEntry entry) {
+        AppUpdateConfigResponse response = new AppUpdateConfigResponse();
+        response.setAppUpdateConfigEntry(entry);
+        response.setStatus(new StatusResponse(12, "App Config is retrieved successfully", StatusResponse.Type.SUCCESS, 1L));
+        return response;
+    }
+
+    @Override
+    protected BaseService<AppUpdateConfigEntity, AppUpdateConfigEntry> getService() {
+        return appConfigService;
+    }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public AppUpdateConfigResponse persistUser(@RequestBody AppUpdateConfigEntry request) {

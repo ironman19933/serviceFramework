@@ -19,14 +19,19 @@ import java.util.stream.StreamSupport;
 @Service
 @Transactional
 public class AppConfigService extends BaseService<AppUpdateConfigEntity, AppUpdateConfigEntry> {
-    @Autowired
-    private AppUpdateConfigRepository appUpdateConfigRepository;
-    @Autowired
-    private RabbitService rabbitService;
-    @Autowired
-    private RestTemplate restTemplate;
+    private final AppUpdateConfigRepository appUpdateConfigRepository;
+    private final RabbitService rabbitService;
+    private final RestTemplate restTemplate;
 
     private AppConfigMapper appConfigMapper = Mappers.getMapper(AppConfigMapper.class);
+
+    @Autowired
+    public AppConfigService(AppUpdateConfigRepository appUpdateConfigRepository, RabbitService rabbitService, RestTemplate restTemplate) {
+        this.appUpdateConfigRepository = appUpdateConfigRepository;
+        this.rabbitService = rabbitService;
+        this.restTemplate = restTemplate;
+        this.baseRepository = appUpdateConfigRepository;
+    }
 
     public AppUpdateConfigEntry create(AppUpdateConfigEntry request) {
         AppUpdateConfigEntity entity = convertToEntity(request);
@@ -50,7 +55,6 @@ public class AppConfigService extends BaseService<AppUpdateConfigEntity, AppUpda
     public AppUpdateConfigEntity getConfigByVersionNo(Long versionNo) {
         return appUpdateConfigRepository.findByVersionNo(versionNo);
     }
-
 
     @Override
     public AppUpdateConfigEntry convertToEntry(AppUpdateConfigEntity entity) {

@@ -1,8 +1,8 @@
 package com.abhinav.learn_spring.codes;
 
 public enum ErrorCodes implements StatusCode {
-    GENERIC_ERROR_OCCURRED(101, "Error Occurred!");
-
+    GENERIC_ERROR_OCCURRED(101, "Error Occurred!"),
+    NOT_FOUND(102, "Data not found");
     Integer code;
     String message;
 
