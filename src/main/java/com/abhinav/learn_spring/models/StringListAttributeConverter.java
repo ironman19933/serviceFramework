@@ -1,8 +1,10 @@
 package com.abhinav.learn_spring.models;
 
 import javax.persistence.AttributeConverter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class StringListAttributeConverter implements AttributeConverter<List<String>, String> {
     @Override
@@ -18,6 +20,6 @@ public class StringListAttributeConverter implements AttributeConverter<List<Str
         if (dbData == null) {
             return null;
         }
-        return Arrays.asList(dbData.split("\\s*,\\s*"));
+        return new ArrayList<>(Arrays.asList(dbData.split("\\s*,\\s*")));
     }
 }

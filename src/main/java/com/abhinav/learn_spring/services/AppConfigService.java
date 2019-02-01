@@ -34,8 +34,8 @@ public class AppConfigService extends BaseService<AppUpdateConfigEntity, AppUpda
     }
 
     public AppUpdateConfigEntry create(AppUpdateConfigEntry request) {
-        AppUpdateConfigEntity entity = convertToEntity(request);
-        return convertToEntry(appUpdateConfigRepository.save(entity));
+        AppUpdateConfigEntity entity = convertToEntity(request, null);
+        return convertToEntry(appUpdateConfigRepository.save(entity), null);
     }
 
     public AppUpdateConfigEntry getConfig() {
@@ -43,8 +43,8 @@ public class AppConfigService extends BaseService<AppUpdateConfigEntity, AppUpda
         if (CollectionUtils.isEmpty(configs)) {
             return null;
         } else {
-            rabbitService.sendMessage("learn_spring", "learn_spring_routing_key", convertToEntry(configs.get(0)));
-            return convertToEntry(configs.get(0));
+            rabbitService.sendMessage("learn_spring", "learn_spring_routing_key", convertToEntry(configs.get(0), null));
+            return convertToEntry(configs.get(0), null);
         }
     }
 
@@ -57,12 +57,18 @@ public class AppConfigService extends BaseService<AppUpdateConfigEntity, AppUpda
     }
 
     @Override
-    public AppUpdateConfigEntry convertToEntry(AppUpdateConfigEntity entity) {
-        return appConfigMapper.toEntry(entity);
+    protected AppUpdateConfigEntry convertToEntry(AppUpdateConfigEntity entity, AppUpdateConfigEntry entry) {
+        if (entry == null) {
+            entry = new AppUpdateConfigEntry();
+        }
+        return appConfigMapper.toEntry(entity, entry);
     }
 
     @Override
-    public AppUpdateConfigEntity convertToEntity(AppUpdateConfigEntry entry) {
-        return appConfigMapper.toEntity(entry);
+    protected AppUpdateConfigEntity convertToEntity(AppUpdateConfigEntry entry, AppUpdateConfigEntity entity) {
+        if (entity == null) {
+            entity = new AppUpdateConfigEntity();
+        }
+        return appConfigMapper.toEntity(entry, entity);
     }
 }
