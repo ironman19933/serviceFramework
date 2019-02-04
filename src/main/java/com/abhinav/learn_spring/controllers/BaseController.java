@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 public abstract class BaseController<R extends BaseResponse, M extends BaseEntity, E extends BaseEntry> {
 
-    protected BaseService<M, E> baseService;
+    protected BaseService<M, E> service;
 
     protected BaseService<M, E> getService() {
-        return baseService;
+        return service;
     }
 
     protected abstract R createResponse(E entry);

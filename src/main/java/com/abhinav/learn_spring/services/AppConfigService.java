@@ -13,6 +13,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -31,11 +32,6 @@ public class AppConfigService extends BaseService<AppUpdateConfigEntity, AppUpda
         this.repository = appUpdateConfigRepository;
     }
 
-    public AppUpdateConfigEntry create(AppUpdateConfigEntry request) {
-        AppUpdateConfigEntity entity = convertToEntity(request, null);
-        return convertToEntry(repository.save(entity), null);
-    }
-
     public AppUpdateConfigEntry getConfig() {
         List<AppUpdateConfigEntity> configs = StreamSupport.stream(repository.findAll().spliterator(), false).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(configs)) {
@@ -46,8 +42,8 @@ public class AppConfigService extends BaseService<AppUpdateConfigEntity, AppUpda
         }
     }
 
-    public AppUpdateConfigEntry getConfigByEntry() {
-        return restTemplate.getForObject("http://localhost:7076/getConfig", AppUpdateConfigResponse.class).getAppUpdateConfigEntry();
+    public AppUpdateConfigEntry getConfigByRestClient() {
+        return restTemplate.getForObject("http://localhost:7076/appUpdateConfig/getConfig", AppUpdateConfigResponse.class).getAppUpdateConfigEntry();
     }
 
     public AppUpdateConfigEntity getConfigByVersionNo(Long versionNo) {
@@ -56,7 +52,7 @@ public class AppConfigService extends BaseService<AppUpdateConfigEntity, AppUpda
 
     @Override
     protected AppUpdateConfigEntry convertToEntry(AppUpdateConfigEntity entity, AppUpdateConfigEntry entry) {
-        if (entry == null) {
+        if (Objects.isNull(entry)) {
             entry = new AppUpdateConfigEntry();
         }
         return appConfigMapper.toEntry(entity, entry);
@@ -64,7 +60,7 @@ public class AppConfigService extends BaseService<AppUpdateConfigEntity, AppUpda
 
     @Override
     protected AppUpdateConfigEntity convertToEntity(AppUpdateConfigEntry entry, AppUpdateConfigEntity entity) {
-        if (entity == null) {
+        if (Objects.isNull(entity)) {
             entity = new AppUpdateConfigEntity();
         }
         return appConfigMapper.toEntity(entry, entity);
