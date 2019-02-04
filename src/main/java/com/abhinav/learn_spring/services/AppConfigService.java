@@ -19,7 +19,6 @@ import java.util.stream.StreamSupport;
 @Service
 @Transactional
 public class AppConfigService extends BaseService<AppUpdateConfigEntity, AppUpdateConfigEntry> {
-    private final AppUpdateConfigRepository appUpdateConfigRepository;
     private final RabbitService rabbitService;
     private final RestTemplate restTemplate;
 
@@ -27,19 +26,18 @@ public class AppConfigService extends BaseService<AppUpdateConfigEntity, AppUpda
 
     @Autowired
     public AppConfigService(AppUpdateConfigRepository appUpdateConfigRepository, RabbitService rabbitService, RestTemplate restTemplate) {
-        this.appUpdateConfigRepository = appUpdateConfigRepository;
         this.rabbitService = rabbitService;
         this.restTemplate = restTemplate;
-        this.baseRepository = appUpdateConfigRepository;
+        this.repository = appUpdateConfigRepository;
     }
 
     public AppUpdateConfigEntry create(AppUpdateConfigEntry request) {
         AppUpdateConfigEntity entity = convertToEntity(request, null);
-        return convertToEntry(appUpdateConfigRepository.save(entity), null);
+        return convertToEntry(repository.save(entity), null);
     }
 
     public AppUpdateConfigEntry getConfig() {
-        List<AppUpdateConfigEntity> configs = StreamSupport.stream(appUpdateConfigRepository.findAll().spliterator(), false).collect(Collectors.toList());
+        List<AppUpdateConfigEntity> configs = StreamSupport.stream(repository.findAll().spliterator(), false).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(configs)) {
             return null;
         } else {
@@ -53,7 +51,7 @@ public class AppConfigService extends BaseService<AppUpdateConfigEntity, AppUpda
     }
 
     public AppUpdateConfigEntity getConfigByVersionNo(Long versionNo) {
-        return appUpdateConfigRepository.findByVersionNo(versionNo);
+        return ((AppUpdateConfigRepository) repository).findByVersionNo(versionNo);
     }
 
     @Override
