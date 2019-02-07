@@ -1,18 +1,22 @@
 package com.abhinav.learn_spring.services;
 
 import com.abhinav.learn_spring.exceptions.ServiceException;
+import com.abhinav.learn_spring.models.SearchSpecification;
 import com.abhinav.learn_spring.models.entities.BaseEntity;
 import com.abhinav.learn_spring.models.entries.BaseEntry;
+import com.abhinav.learn_spring.models.repositories.CustomBaseRepository;
 import lombok.Getter;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
+import java.util.*;
 
 @Getter
 public abstract class BaseService<Entity extends BaseEntity, Entry extends BaseEntry> {
 
-    public CrudRepository<Entity, Long> repository;
+    public JpaRepository<Entity, Long> repository;
+
+    public CustomBaseRepository<Entity> customBaseRepository;
 
     protected abstract Entry convertToEntry(Entity entity, Entry entry);
 
@@ -38,5 +42,27 @@ public abstract class BaseService<Entity extends BaseEntity, Entry extends BaseE
         }
         entity = getRepository().save(convertToEntity(entry, entity));
         return convertToEntry(entity, null);
+    }
+
+    public List<Entity> search(String filters) {
+        Map<String, HashSet<String>> filers = getFilters(filters);
+        return customBaseRepository.findAll(new SearchSpecification<>(filers));
+    }
+
+    public static Map<String, HashSet<String>> getFilters(String filters) {
+        Map<String, HashSet<String>> map = new HashMap<>();
+        if (filters == null)
+            return map;
+        try {
+            String[] filterArray = filters.split(";");
+            for (String filter : filterArray) {
+                String[] splitFilter = filter.split(":");
+                HashSet<String> filterVals = new HashSet<>();
+                filterVals.addAll(Arrays.asList(splitFilter[1].split(",")));
+                map.put(splitFilter[0], filterVals);
+            }
+        } catch (Exception ignored) {
+        }
+        return map;
     }
 }

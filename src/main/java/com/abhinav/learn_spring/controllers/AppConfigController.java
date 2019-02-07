@@ -8,6 +8,8 @@ import com.abhinav.learn_spring.services.AppConfigService;
 import com.abhinav.learn_spring.services.RabbitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,7 +30,7 @@ public class AppConfigController extends BaseController<AppUpdateConfigResponse,
 
     @Cacheable(value = "configs")
     @RequestMapping(value = "/getConfig", method = RequestMethod.GET)
-    public AppUpdateConfigResponse getConfig() {
+    public AppUpdateConfigResponse getConfig(@RequestHeader HttpHeaders headers) {
         AppUpdateConfigResponse finalResponse = new AppUpdateConfigResponse();
         try {
             AppUpdateConfigEntry entry = ((AppConfigService) service).getConfig();
