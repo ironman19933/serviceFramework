@@ -5,6 +5,7 @@ import com.abhinav.learn_spring.models.SearchSpecification;
 import com.abhinav.learn_spring.models.entities.BaseEntity;
 import com.abhinav.learn_spring.models.entries.BaseEntry;
 import com.abhinav.learn_spring.models.repositories.CustomBaseRepository;
+import com.abhinav.learn_spring.utils.SearchHelper;
 import lombok.Getter;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,25 +45,11 @@ public abstract class BaseService<Entity extends BaseEntity, Entry extends BaseE
         return convertToEntry(entity, null);
     }
 
-    public List<Entity> search(String filters) {
-        Map<String, HashSet<String>> filers = getFilters(filters);
-        return customBaseRepository.findAll(new SearchSpecification<>(filers));
-    }
-
-    public static Map<String, HashSet<String>> getFilters(String filters) {
-        Map<String, HashSet<String>> map = new HashMap<>();
-        if (filters == null)
-            return map;
-        try {
-            String[] filterArray = filters.split(";");
-            for (String filter : filterArray) {
-                String[] splitFilter = filter.split(":");
-                HashSet<String> filterVals = new HashSet<>();
-                filterVals.addAll(Arrays.asList(splitFilter[1].split(",")));
-                map.put(splitFilter[0], filterVals);
-            }
-        } catch (Exception ignored) {
-        }
-        return map;
+    @Transactional(readOnly = true)
+    public List<Entity> searchCustom(String filters) throws ServiceException {
+        Map<String, Map<String, String>> searchParams = SearchHelper.parseSearchParams(filters);
+        SearchSpecification<Entity> searchSpecification = new SearchSpecification<>();
+        searchSpecification.setSearchParams(searchParams);
+        return customBaseRepository.findAll(searchSpecification);
     }
 }

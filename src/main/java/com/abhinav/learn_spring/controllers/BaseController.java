@@ -2,6 +2,7 @@ package com.abhinav.learn_spring.controllers;
 
 import com.abhinav.learn_spring.codes.ErrorCodes;
 import com.abhinav.learn_spring.codes.SuccessCodes;
+import com.abhinav.learn_spring.exceptions.ServiceException;
 import com.abhinav.learn_spring.models.entities.BaseEntity;
 import com.abhinav.learn_spring.models.entries.BaseEntry;
 import com.abhinav.learn_spring.models.responses.BaseResponse;
@@ -9,7 +10,6 @@ import com.abhinav.learn_spring.models.responses.StatusResponse;
 import com.abhinav.learn_spring.services.BaseService;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.text.html.parser.Entity;
 import java.util.List;
 
 public abstract class BaseController<R extends BaseResponse, M extends BaseEntity, E extends BaseEntry> {
@@ -62,7 +62,12 @@ public abstract class BaseController<R extends BaseResponse, M extends BaseEntit
     }
 
     @RequestMapping(value = "/search", method = RequestMethod.POST)
-    public List<M> search(@RequestParam("filters") String filters) {
-        return service.search(filters);
+    public List<M> customSearch(@RequestParam("filters") String filters) {
+        try {
+            return service.searchCustom(filters);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
