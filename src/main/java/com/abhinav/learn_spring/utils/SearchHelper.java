@@ -181,6 +181,7 @@ public class SearchHelper {
                 break;
             case IS_NOT_NULL:
                 predicates.add(builder.isNotNull(path));
+
                 break;
             case GREATER_THAN:
                 if (path.getJavaType().getName().lastIndexOf("Date") > -1) {
