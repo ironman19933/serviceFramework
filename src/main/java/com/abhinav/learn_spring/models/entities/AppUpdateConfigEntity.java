@@ -17,9 +17,8 @@ public class AppUpdateConfigEntity extends BaseEntity {
     @Column(name = "version_no")
     private Long versionNo;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "update_type")
-    private UpdateType updateType;
+    private String updateType;
 
     @Column(name = "uids")
     @Convert(converter = StringListAttributeConverter.class)

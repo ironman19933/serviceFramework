@@ -1,5 +1,6 @@
 package com.abhinav.learn_spring.models.entries;
 
+import com.abhinav.learn_spring.models.enums.UpdateType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

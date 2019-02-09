@@ -13,8 +13,8 @@ import java.util.*;
 
 public class SearchHelper {
     @NotNull
-    public static Map<String, Map<String, String>> parseSearchParams(String filters) throws ServiceException {
-        Map<String, Map<String, String>> params = new HashMap<>();
+    public static Map<SearchOperator, Map<String, String>> parseSearchParams(String filters) throws ServiceException {
+        Map<SearchOperator, Map<String, String>> params = new HashMap<>();
         Map<String, String> inParams = new HashMap<>();
         Map<String, String> eqParams = new HashMap<>();
         Map<String, String> neParams = new HashMap<>();
@@ -85,17 +85,17 @@ public class SearchHelper {
                             nlParams.put(keyName, value);
                             break;
                     }
-                    params.put(SearchOperator.IN.name, inParams);
-                    params.put(SearchOperator.EQUAL_TO.name, eqParams);
-                    params.put(SearchOperator.IS_NULL.name, isNullParams);
-                    params.put(SearchOperator.IS_NOT_NULL.name, isNotNullParams);
-                    params.put(SearchOperator.NOT_EQUAL_TO.name, neParams);
-                    params.put(SearchOperator.GREATER_THAN.name, gtParams);
-                    params.put(SearchOperator.LESS_THAN.name, ltParams);
-                    params.put(SearchOperator.LESS_THAN_EQUAL_TO.name, leParams);
-                    params.put(SearchOperator.GREATER_THAN_EQUAL_TO.name, geParams);
-                    params.put(SearchOperator.LIKE.name, likeParams);
-                    params.put(SearchOperator.NOT_LIKE.name, nlParams);
+                    params.put(SearchOperator.IN, inParams);
+                    params.put(SearchOperator.EQUAL_TO, eqParams);
+                    params.put(SearchOperator.IS_NULL, isNullParams);
+                    params.put(SearchOperator.IS_NOT_NULL, isNotNullParams);
+                    params.put(SearchOperator.NOT_EQUAL_TO, neParams);
+                    params.put(SearchOperator.GREATER_THAN, gtParams);
+                    params.put(SearchOperator.LESS_THAN, ltParams);
+                    params.put(SearchOperator.LESS_THAN_EQUAL_TO, leParams);
+                    params.put(SearchOperator.GREATER_THAN_EQUAL_TO, geParams);
+                    params.put(SearchOperator.LIKE, likeParams);
+                    params.put(SearchOperator.NOT_LIKE, nlParams);
                 } catch (ArrayIndexOutOfBoundsException ex) {
                     throw new ServiceException("Search Params are not in proper format");
                 }
@@ -104,9 +104,9 @@ public class SearchHelper {
         return params;
     }
 
-    public static Predicate[] getPredicatesFromSearchParams(Map<String, Map<String, String>> searchParams, Root root, CriteriaBuilder builder) {
+    public static Predicate[] getPredicatesFromSearchParams(Map<SearchOperator, Map<String, String>> searchParams, Root root, CriteriaBuilder builder) {
         List<Predicate> predicateList = new ArrayList<>();
-        for (Map.Entry<String, Map<String, String>> entry : searchParams.entrySet()) {
+        for (Map.Entry<SearchOperator, Map<String, String>> entry : searchParams.entrySet()) {
             for (Map.Entry<String, String> e : entry.getValue().entrySet()) {
                 addPredicate(entry.getKey(), e.getKey(), e.getValue(), root, predicateList, builder);
             }
@@ -125,10 +125,9 @@ public class SearchHelper {
         return result;
     }
 
-    private static void addPredicate(String operator, String key, String value, Root root, List<Predicate> predicates, CriteriaBuilder builder) {
+    private static void addPredicate(SearchOperator searchOperator, String key, String value, Root root, List<Predicate> predicates, CriteriaBuilder builder) {
         DateFormat formatter = new SimpleDateFormat(Constants.SEARCH_DATE_FORMAT_LONG);
         DateFormat formatterShort = new SimpleDateFormat(Constants.SEARCH_DATE_FORMAT_SHORT);
-        SearchOperator searchOperator = SearchOperator.value(operator);
         Path path = root;
         path = path.get(key);
 

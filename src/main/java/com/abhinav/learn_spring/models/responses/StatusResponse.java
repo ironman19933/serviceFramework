@@ -15,7 +15,7 @@ public class StatusResponse implements Serializable {
     private Integer statusCode;
     private String statusMessage = "";
     private Type statusType = Type.SUCCESS;
-    private Long totalCount;
+    private Integer totalCount;
 
     public enum Type {
         ERROR,
@@ -23,7 +23,7 @@ public class StatusResponse implements Serializable {
         WARNING
     }
 
-    public StatusResponse(StatusCode statusCode, Type statusType, Long totalCount) {
+    public StatusResponse(StatusCode statusCode, Type statusType, Integer totalCount) {
         this.statusCode = statusCode.getCode();
         this.statusMessage = statusCode.getMessage();
         this.statusType = statusType;
@@ -35,7 +35,7 @@ public class StatusResponse implements Serializable {
         this.totalCount = totalCount;
     }
 
-    public StatusResponse(StatusCode statusCode, Long totalCount) {
+    public StatusResponse(StatusCode statusCode, Integer totalCount) {
         this.statusCode = statusCode.getCode();
         this.statusMessage = statusCode.getMessage();
         if (statusCode instanceof SuccessCodes) {

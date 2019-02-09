@@ -8,13 +8,9 @@ import com.abhinav.learn_spring.models.entries.BaseEntry;
 import com.abhinav.learn_spring.models.responses.BaseResponse;
 import com.abhinav.learn_spring.models.responses.StatusResponse;
 import com.abhinav.learn_spring.services.BaseService;
-import javafx.beans.DefaultProperty;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 public abstract class BaseController<R extends BaseResponse, M extends BaseEntity, E extends BaseEntry> {
@@ -25,17 +21,17 @@ public abstract class BaseController<R extends BaseResponse, M extends BaseEntit
         return service;
     }
 
-    protected abstract R createResponse(E entry);
+    protected abstract R createResponse(List<E> entryList);
 
     @RequestMapping(value = "/findById/{id}", method = RequestMethod.GET)
     public R findById(@PathVariable Long id) {
         R response = createResponse(null);
         try {
             E entry = getService().find(id);
-            response = createResponse(entry);
-            response.setStatus(new StatusResponse(SuccessCodes.DATA_RETRIEVED_SUCCESSFULLY, 1L));
+            response = createResponse(Collections.singletonList(entry));
+            response.setStatus(new StatusResponse(SuccessCodes.DATA_RETRIEVED_SUCCESSFULLY, 1));
         } catch (Exception e) {
-            response.setStatus(new StatusResponse(ErrorCodes.GENERIC_ERROR_OCCURRED, 1L));
+            response.setStatus(new StatusResponse(ErrorCodes.GENERIC_ERROR_OCCURRED, 1));
         }
         return response;
     }
@@ -45,10 +41,10 @@ public abstract class BaseController<R extends BaseResponse, M extends BaseEntit
         R response = createResponse(null);
         try {
             E newEntry = getService().save(entry);
-            response = createResponse(newEntry);
-            response.setStatus(new StatusResponse(SuccessCodes.CREATED, 1L));
+            response = createResponse(Collections.singletonList(newEntry));
+            response.setStatus(new StatusResponse(SuccessCodes.CREATED, 1));
         } catch (Exception e) {
-            response.setStatus(new StatusResponse(ErrorCodes.GENERIC_ERROR_OCCURRED, 1L));
+            response.setStatus(new StatusResponse(ErrorCodes.GENERIC_ERROR_OCCURRED, 1));
         }
         return response;
     }
@@ -58,26 +54,28 @@ public abstract class BaseController<R extends BaseResponse, M extends BaseEntit
         R response = createResponse(null);
         try {
             E newEntry = getService().update(entry, id);
-            response = createResponse(newEntry);
-            response.setStatus(new StatusResponse(SuccessCodes.CREATED, 1L));
+            response = createResponse(Collections.singletonList(newEntry));
+            response.setStatus(new StatusResponse(SuccessCodes.CREATED, 1));
         } catch (Exception e) {
-            response.setStatus(new StatusResponse(ErrorCodes.GENERIC_ERROR_OCCURRED.getCode(), e.getMessage(), StatusResponse.Type.ERROR, 1L));
+            response.setStatus(new StatusResponse(ErrorCodes.GENERIC_ERROR_OCCURRED.getCode(), e.getMessage(), StatusResponse.Type.ERROR, 1));
         }
         return response;
     }
 
     @RequestMapping(value = "/search", method = RequestMethod.POST)
-    public List<M> customSearch(@RequestParam("filters") String filters,
+    public R customSearch(@RequestParam("filters") String filters,
                                 @RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
                                 @RequestParam(value = "fetchSize", defaultValue = "50", required = false) Integer fetchSize,
-                                @RequestParam(value = "sortBy", defaultValue = "id",required = false) String sortBy,
+                                @RequestParam(value = "sortBy", defaultValue = "id", required = false) String sortBy,
                                 @RequestParam(value = "sortOrder", defaultValue = "ASC", required = false) String sortOrder) {
+        R response = createResponse(null);
         try {
-
-            return service.searchCustom(filters, page, fetchSize, sortBy, sortOrder);
+            List<E> result = service.search(filters, page, fetchSize, sortBy, sortOrder);
+            response = createResponse(result);
+            response.setStatus(new StatusResponse(SuccessCodes.DATA_RETRIEVED_SUCCESSFULLY, result.size()));
         } catch (ServiceException e) {
-            e.printStackTrace();
-            return null;
+            response.setStatus(new StatusResponse(ErrorCodes.GENERIC_ERROR_OCCURRED.getCode(), e.getMessage(), StatusResponse.Type.ERROR, 1));
         }
+        return response;
     }
 }

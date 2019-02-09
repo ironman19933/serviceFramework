@@ -1,6 +1,7 @@
 package com.abhinav.learn_spring.services;
 
 import com.abhinav.learn_spring.exceptions.ServiceException;
+import com.abhinav.learn_spring.models.SearchOperator;
 import com.abhinav.learn_spring.models.SearchSpecification;
 import com.abhinav.learn_spring.models.entities.BaseEntity;
 import com.abhinav.learn_spring.models.entries.BaseEntry;
@@ -15,6 +16,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 public abstract class BaseService<Entity extends BaseEntity, Entry extends BaseEntry> {
@@ -50,8 +52,8 @@ public abstract class BaseService<Entity extends BaseEntity, Entry extends BaseE
     }
 
     @Transactional(readOnly = true)
-    public List<Entity> searchCustom(String filters, Integer page, Integer fetchSize, String sortBy, String sortOrder) throws ServiceException {
-        Map<String, Map<String, String>> searchParams = SearchHelper.parseSearchParams(filters);
+    public List<Entry> search(String filters, Integer page, Integer fetchSize, String sortBy, String sortOrder) throws ServiceException {
+        Map<SearchOperator, Map<String, String>> searchParams = SearchHelper.parseSearchParams(filters);
         Sort sort = null;
         if (sortOrder.equals("ASC")) {
             sort = new Sort(new Sort.Order(Sort.Direction.ASC, sortBy));
@@ -61,6 +63,9 @@ public abstract class BaseService<Entity extends BaseEntity, Entry extends BaseE
         }
         Pageable pageable = new PageRequest(page, fetchSize, sort);
         Page<Entity> resultPages = customBaseRepository.findAll(new SearchSpecification<>(searchParams), pageable);
-        return resultPages.getContent();
+        return resultPages.getContent()
+                .parallelStream()
+                .map(x -> convertToEntry(x, null))
+                .collect(Collectors.toList());
     }
 }

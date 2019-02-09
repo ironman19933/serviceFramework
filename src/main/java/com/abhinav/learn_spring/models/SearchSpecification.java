@@ -13,7 +13,7 @@ import java.util.*;
 @AllArgsConstructor
 @Setter
 public class SearchSpecification<T> implements Specification<T> {
-    private Map<String, Map<String, String>> searchParams;
+    private Map<SearchOperator, Map<String, String>> searchParams;
 
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder builder) {

@@ -5,26 +5,26 @@ import com.abhinav.learn_spring.models.entries.AppUpdateConfigEntry;
 import com.abhinav.learn_spring.models.responses.AppUpdateConfigResponse;
 import com.abhinav.learn_spring.models.responses.StatusResponse;
 import com.abhinav.learn_spring.services.AppConfigService;
-import com.abhinav.learn_spring.services.RabbitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/appUpdateConfig")
 public class AppConfigController extends BaseController<AppUpdateConfigResponse, AppUpdateConfigEntity, AppUpdateConfigEntry> {
     @Autowired
-    public AppConfigController(AppConfigService appConfigService, RabbitService rabbitService) {
+    public AppConfigController(AppConfigService appConfigService) {
         this.service = appConfigService;
     }
 
     @Override
-    protected AppUpdateConfigResponse createResponse(AppUpdateConfigEntry entry) {
+    protected AppUpdateConfigResponse createResponse(List<AppUpdateConfigEntry> entryList) {
         AppUpdateConfigResponse response = new AppUpdateConfigResponse();
-        response.setAppUpdateConfigEntry(entry);
-        response.setStatus(new StatusResponse(12, "", StatusResponse.Type.SUCCESS, 1L));
+        response.setAppUpdateConfigEntries(entryList);
+        response.setStatus(new StatusResponse(1, "", StatusResponse.Type.SUCCESS, 1));
         return response;
     }
 
@@ -35,9 +35,9 @@ public class AppConfigController extends BaseController<AppUpdateConfigResponse,
         try {
             AppUpdateConfigEntry entry = ((AppConfigService) service).getConfig();
             finalResponse.setAppUpdateConfigEntry(entry);
-            finalResponse.setStatus(new StatusResponse(12, "App Config is retrieved successfully", StatusResponse.Type.SUCCESS, 1L));
+            finalResponse.setStatus(new StatusResponse(12, "App Config is retrieved successfully", StatusResponse.Type.SUCCESS, 1));
         } catch (Exception e) {
-            finalResponse.setStatus(new StatusResponse(13, "Error Occurred", StatusResponse.Type.ERROR, 1L));
+            finalResponse.setStatus(new StatusResponse(13, "Error Occurred", StatusResponse.Type.ERROR, 1));
         }
         return finalResponse;
     }
@@ -49,9 +49,9 @@ public class AppConfigController extends BaseController<AppUpdateConfigResponse,
         try {
             AppUpdateConfigEntry entry = ((AppConfigService) service).getConfigByRestClient();
             finalResponse.setAppUpdateConfigEntry(entry);
-            finalResponse.setStatus(new StatusResponse(12, "App Config is retrieved successfully", StatusResponse.Type.SUCCESS, 1L));
+            finalResponse.setStatus(new StatusResponse(12, "App Config is retrieved successfully", StatusResponse.Type.SUCCESS, 1));
         } catch (Exception e) {
-            finalResponse.setStatus(new StatusResponse(13, "Error Occurred", StatusResponse.Type.ERROR, 1L));
+            finalResponse.setStatus(new StatusResponse(13, "Error Occurred", StatusResponse.Type.ERROR, 1));
         }
         return finalResponse;
     }
