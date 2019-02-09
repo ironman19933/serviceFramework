@@ -8,6 +8,11 @@ import com.abhinav.learn_spring.models.entries.BaseEntry;
 import com.abhinav.learn_spring.models.responses.BaseResponse;
 import com.abhinav.learn_spring.models.responses.StatusResponse;
 import com.abhinav.learn_spring.services.BaseService;
+import javafx.beans.DefaultProperty;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -62,9 +67,14 @@ public abstract class BaseController<R extends BaseResponse, M extends BaseEntit
     }
 
     @RequestMapping(value = "/search", method = RequestMethod.POST)
-    public List<M> customSearch(@RequestParam("filters") String filters) {
+    public List<M> customSearch(@RequestParam("filters") String filters,
+                                @RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
+                                @RequestParam(value = "fetchSize", defaultValue = "50", required = false) Integer fetchSize,
+                                @RequestParam(value = "sortBy", defaultValue = "id",required = false) String sortBy,
+                                @RequestParam(value = "sortOrder", defaultValue = "ASC", required = false) String sortOrder) {
         try {
-            return service.searchCustom(filters);
+
+            return service.searchCustom(filters, page, fetchSize, sortBy, sortOrder);
         } catch (ServiceException e) {
             e.printStackTrace();
             return null;

@@ -6,6 +6,9 @@ import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.*;
 import javax.validation.constraints.NotNull;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class SearchHelper {
@@ -22,6 +25,7 @@ public class SearchHelper {
         Map<String, String> leParams = new HashMap<>();
         Map<String, String> geParams = new HashMap<>();
         Map<String, String> likeParams = new HashMap<>();
+        Map<String, String> nlParams = new HashMap<>();
 
         if (StringUtils.isEmpty(filters)) {
             return params;
@@ -43,6 +47,9 @@ public class SearchHelper {
                     String keyName = keyAndOperator[0];
                     String operator = keyAndOperator[1];
                     SearchOperator searchOperator = SearchOperator.value(operator);
+                    if (Objects.isNull(searchOperator)) {
+                        throw new ServiceException("No Valid Search Operator Found");
+                    }
                     switch (searchOperator) {
                         case IN:
                             inParams.put(keyName, value);
@@ -74,6 +81,9 @@ public class SearchHelper {
                         case LIKE:
                             likeParams.put(keyName, value);
                             break;
+                        case NOT_LIKE:
+                            nlParams.put(keyName, value);
+                            break;
                     }
                     params.put(SearchOperator.IN.name, inParams);
                     params.put(SearchOperator.EQUAL_TO.name, eqParams);
@@ -85,6 +95,7 @@ public class SearchHelper {
                     params.put(SearchOperator.LESS_THAN_EQUAL_TO.name, leParams);
                     params.put(SearchOperator.GREATER_THAN_EQUAL_TO.name, geParams);
                     params.put(SearchOperator.LIKE.name, likeParams);
+                    params.put(SearchOperator.NOT_LIKE.name, nlParams);
                 } catch (ArrayIndexOutOfBoundsException ex) {
                     throw new ServiceException("Search Params are not in proper format");
                 }
@@ -115,9 +126,12 @@ public class SearchHelper {
     }
 
     private static void addPredicate(String operator, String key, String value, Root root, List<Predicate> predicates, CriteriaBuilder builder) {
+        DateFormat formatter = new SimpleDateFormat(Constants.SEARCH_DATE_FORMAT_LONG);
+        DateFormat formatterShort = new SimpleDateFormat(Constants.SEARCH_DATE_FORMAT_SHORT);
         SearchOperator searchOperator = SearchOperator.value(operator);
         Path path = root;
         path = path.get(key);
+
         switch (searchOperator) {
             case IN:
                 Set<String> values = new HashSet<>(Arrays.asList(value.split(",")));
@@ -131,6 +145,16 @@ public class SearchHelper {
             case EQUAL_TO:
                 if (path.getJavaType().isEnum()) {
                     predicates.add(path.in(Enum.valueOf(path.getJavaType(), value)));
+                } else if (path.getJavaType().getName().lastIndexOf("Date") > -1) {
+                    try {
+                        predicates.add(builder.equal((Expression<Date>) path, formatter.parse(value)));
+                    } catch (ParseException e) {
+                        try {
+                            predicates.add(builder.equal((Expression<Date>) path, formatterShort.parse(value)));
+                        } catch (ParseException e1) {
+                            //todo log the exception
+                        }
+                    }
                 } else {
                     predicates.add(path.in(value));
                 }
@@ -138,33 +162,99 @@ public class SearchHelper {
             case NOT_EQUAL_TO:
                 if (path.getJavaType().isEnum()) {
                     predicates.add(builder.notEqual(path, Enum.valueOf(path.getJavaType(), value)));
+                } else if (path.getJavaType().getName().lastIndexOf("Date") > -1) {
+                    try {
+                        predicates.add(builder.notEqual((Expression<Date>) path, formatter.parse(value)));
+                    } catch (ParseException e) {
+                        try {
+                            predicates.add(builder.notEqual((Expression<Date>) path, formatterShort.parse(value)));
+                        } catch (ParseException e1) {
+                            //todo log the exception
+                        }
+                    }
                 } else {
                     predicates.add(builder.notEqual(path, value));
                 }
                 break;
             case IS_NULL:
-                predicates.add(path.isNull());
+                predicates.add(builder.isNull(path));
                 break;
             case IS_NOT_NULL:
-                predicates.add(path.isNotNull());
+                predicates.add(builder.isNotNull(path));
                 break;
             case GREATER_THAN:
-                predicates.add(builder.greaterThan((Expression<String>) path, value));
+                if (path.getJavaType().getName().lastIndexOf("Date") > -1) {
+                    try {
+                        predicates.add(builder.greaterThan((Expression<Date>) path, formatter.parse(value)));
+                    } catch (ParseException e) {
+                        try {
+                            predicates.add(builder.greaterThan((Expression<Date>) path, formatterShort.parse(value)));
+                        } catch (ParseException e1) {
+                            //todo log the exception
+                        }
+                    }
+                } else {
+                    predicates.add(builder.greaterThan((Expression<String>) path, value));
+                }
                 break;
             case LESS_THAN:
-                predicates.add(builder.lessThan((Expression<String>) path, value));
+                if (path.getJavaType().getName().lastIndexOf("Date") > -1) {
+                    try {
+                        predicates.add(builder.lessThan((Expression<Date>) path, formatter.parse(value)));
+                    } catch (ParseException e) {
+                        try {
+                            predicates.add(builder.lessThan((Expression<Date>) path, formatterShort.parse(value)));
+                        } catch (ParseException e1) {
+                            //todo log the exception
+                        }
+                    }
+                } else {
+                    predicates.add(builder.lessThan((Expression<String>) path, value));
+                }
                 break;
             case GREATER_THAN_EQUAL_TO:
-                predicates.add(builder.greaterThanOrEqualTo((Expression<String>) path, value));
+                if (path.getJavaType().getName().lastIndexOf("Date") > -1) {
+                    try {
+                        predicates.add(builder.greaterThanOrEqualTo((Expression<Date>) path, formatter.parse(value)));
+                    } catch (ParseException e) {
+                        try {
+                            predicates.add(builder.greaterThanOrEqualTo((Expression<Date>) path, formatterShort.parse(value)));
+                        } catch (ParseException e1) {
+                            //todo log the exception
+                        }
+                    }
+                } else {
+                    predicates.add(builder.greaterThanOrEqualTo((Expression<String>) path, value));
+                }
                 break;
             case LESS_THAN_EQUAL_TO:
-                predicates.add(builder.lessThanOrEqualTo((Expression<String>) path, value));
+                if (path.getJavaType().getName().lastIndexOf("Date") > -1) {
+                    try {
+                        predicates.add(builder.lessThanOrEqualTo((Expression<Date>) path, formatter.parse(value)));
+                    } catch (ParseException e) {
+                        try {
+                            predicates.add(builder.lessThanOrEqualTo((Expression<Date>) path, formatterShort.parse(value)));
+                        } catch (ParseException e1) {
+                            //todo log the exception
+                        }
+                    }
+                } else {
+                    predicates.add(builder.lessThanOrEqualTo((Expression<String>) path, value));
+                }
                 break;
             case LIKE:
-                predicates.add(builder.like((Expression<String>) path, value));
+                if (path.getJavaType().isEnum()) {
+                    predicates.add(builder.equal((Expression<String>) path, Enum.valueOf(path.getJavaType(), value)));
+                } else {
+                    predicates.add(builder.like((Expression<String>) path, value + "%"));
+                }
                 break;
             case NOT_LIKE:
-                predicates.add(builder.notLike((Expression<String>) path, value));
+                if (path.getJavaType().isEnum()) {
+                    predicates.add(builder.equal((Expression<String>) path, Enum.valueOf(path.getJavaType(), value)));
+                } else {
+                    predicates.add(builder.notLike((Expression<String>) path, value + "%"));
+                }
                 break;
         }
     }

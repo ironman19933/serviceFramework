@@ -7,6 +7,10 @@ import com.abhinav.learn_spring.models.entries.BaseEntry;
 import com.abhinav.learn_spring.models.repositories.CustomBaseRepository;
 import com.abhinav.learn_spring.utils.SearchHelper;
 import lombok.Getter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,10 +50,17 @@ public abstract class BaseService<Entity extends BaseEntity, Entry extends BaseE
     }
 
     @Transactional(readOnly = true)
-    public List<Entity> searchCustom(String filters) throws ServiceException {
+    public List<Entity> searchCustom(String filters, Integer page, Integer fetchSize, String sortBy, String sortOrder) throws ServiceException {
         Map<String, Map<String, String>> searchParams = SearchHelper.parseSearchParams(filters);
-        SearchSpecification<Entity> searchSpecification = new SearchSpecification<>();
-        searchSpecification.setSearchParams(searchParams);
-        return customBaseRepository.findAll(searchSpecification);
+        Sort sort = null;
+        if (sortOrder.equals("ASC")) {
+            sort = new Sort(new Sort.Order(Sort.Direction.ASC, sortBy));
+        }
+        if (sortOrder.equals("DESC")) {
+            sort = new Sort(new Sort.Order(Sort.Direction.DESC, sortBy));
+        }
+        Pageable pageable = new PageRequest(page, fetchSize, sort);
+        Page<Entity> resultPages = customBaseRepository.findAll(new SearchSpecification<>(searchParams), pageable);
+        return resultPages.getContent();
     }
 }
