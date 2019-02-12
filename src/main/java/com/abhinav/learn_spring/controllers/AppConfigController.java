@@ -10,6 +10,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -34,7 +35,7 @@ public class AppConfigController extends BaseController<AppUpdateConfigResponse,
         AppUpdateConfigResponse finalResponse = new AppUpdateConfigResponse();
         try {
             AppUpdateConfigEntry entry = ((AppConfigService) service).getConfig();
-            finalResponse.setAppUpdateConfigEntry(entry);
+            finalResponse.setAppUpdateConfigEntries(Collections.singletonList(entry));
             finalResponse.setStatus(new StatusResponse(12, "App Config is retrieved successfully", StatusResponse.Type.SUCCESS, 1));
         } catch (Exception e) {
             finalResponse.setStatus(new StatusResponse(13, "Error Occurred", StatusResponse.Type.ERROR, 1));
@@ -48,7 +49,7 @@ public class AppConfigController extends BaseController<AppUpdateConfigResponse,
         AppUpdateConfigResponse finalResponse = new AppUpdateConfigResponse();
         try {
             AppUpdateConfigEntry entry = ((AppConfigService) service).getConfigByRestClient();
-            finalResponse.setAppUpdateConfigEntry(entry);
+            finalResponse.setAppUpdateConfigEntries(Collections.singletonList(entry));
             finalResponse.setStatus(new StatusResponse(12, "App Config is retrieved successfully", StatusResponse.Type.SUCCESS, 1));
         } catch (Exception e) {
             finalResponse.setStatus(new StatusResponse(13, "Error Occurred", StatusResponse.Type.ERROR, 1));

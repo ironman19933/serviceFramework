@@ -46,7 +46,7 @@ public class AppConfigService extends BaseService<AppUpdateConfigEntity, AppUpda
     }
 
     public AppUpdateConfigEntry getConfigByRestClient() {
-        return restTemplate.getForObject("http://localhost:7076/appUpdateConfig/getConfig", AppUpdateConfigResponse.class).getAppUpdateConfigEntry();
+        return restTemplate.getForObject("http://localhost:7076/appUpdateConfig/getConfig", AppUpdateConfigResponse.class).getAppUpdateConfigEntries().get(0);
     }
 
     public AppUpdateConfigEntity getConfigByVersionNo(Long versionNo) {

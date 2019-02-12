@@ -54,11 +54,10 @@ public abstract class BaseService<Entity extends BaseEntity, Entry extends BaseE
     @Transactional(readOnly = true)
     public List<Entry> search(String filters, Integer page, Integer fetchSize, String sortBy, String sortOrder) throws ServiceException {
         Map<SearchOperator, Map<String, String>> searchParams = SearchHelper.parseSearchParams(filters);
-        Sort sort = null;
+        Sort sort;
         if (sortOrder.equals("ASC")) {
             sort = new Sort(new Sort.Order(Sort.Direction.ASC, sortBy));
-        }
-        if (sortOrder.equals("DESC")) {
+        } else {
             sort = new Sort(new Sort.Order(Sort.Direction.DESC, sortBy));
         }
         Pageable pageable = new PageRequest(page, fetchSize, sort);

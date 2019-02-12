@@ -2,7 +2,6 @@ package com.abhinav.learn_spring.models.entities;
 
 
 import com.abhinav.learn_spring.models.StringListAttributeConverter;
-import com.abhinav.learn_spring.models.enums.UpdateType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -26,4 +25,7 @@ public class AppUpdateConfigEntity extends BaseEntity {
 
     @Column(name = "download_url")
     private String downloadUrl;
+
+    @Column(name = "deleted")
+    private Boolean deleted;
 }

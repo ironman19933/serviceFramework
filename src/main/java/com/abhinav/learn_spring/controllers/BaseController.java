@@ -73,7 +73,7 @@ public abstract class BaseController<R extends BaseResponse, M extends BaseEntit
             List<E> result = service.search(filters, page, fetchSize, sortBy, sortOrder);
             response = createResponse(result);
             response.setStatus(new StatusResponse(SuccessCodes.DATA_RETRIEVED_SUCCESSFULLY, result.size()));
-        } catch (ServiceException e) {
+        } catch (Exception e) {
             response.setStatus(new StatusResponse(ErrorCodes.GENERIC_ERROR_OCCURRED.getCode(), e.getMessage(), StatusResponse.Type.ERROR, 1));
         }
         return response;
