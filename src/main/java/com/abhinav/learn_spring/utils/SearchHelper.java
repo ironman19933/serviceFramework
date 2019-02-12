@@ -10,6 +10,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SearchHelper {
     @NotNull
@@ -118,9 +119,7 @@ public class SearchHelper {
     private static <T extends Enum<T>> Collection<T> getFilterEnum(Class<T> enumClass, Set<String> filterVal) {
         List<T> result = new ArrayList<>();
         if (!filterVal.isEmpty()) {
-            for (String filter : filterVal) {
-                result.add(Enum.valueOf(enumClass, filter));
-            }
+            result = filterVal.stream().map(value -> Enum.valueOf(enumClass, value)).collect(Collectors.toList());
         }
         return result;
     }

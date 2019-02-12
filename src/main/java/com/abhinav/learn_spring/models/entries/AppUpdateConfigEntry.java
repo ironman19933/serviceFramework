@@ -12,6 +12,6 @@ public class AppUpdateConfigEntry extends BaseEntry {
     private Long versionNo;
     private List<String> eligibleUserEmailIds;
     private String downloadUrl;
-    private String updateType;
+    private UpdateType updateType;
     private Boolean deleted;
 }
