@@ -1,14 +1,12 @@
 package com.abhinav.learn_spring.services;
 
 import com.abhinav.learn_spring.mappers.AppConfigMapper;
-import com.abhinav.learn_spring.models.SearchSpecification;
 import com.abhinav.learn_spring.models.entities.AppUpdateConfigEntity;
 import com.abhinav.learn_spring.models.entries.AppUpdateConfigEntry;
 import com.abhinav.learn_spring.models.repositories.AppUpdateConfigRepository;
 import com.abhinav.learn_spring.models.responses.AppUpdateConfigResponse;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -32,7 +30,7 @@ public class AppConfigService extends BaseService<AppUpdateConfigEntity, AppUpda
         this.rabbitService = rabbitService;
         this.restTemplate = restTemplate;
         this.repository = appUpdateConfigRepository;
-        this.customBaseRepository = appUpdateConfigRepository;
+        this.baseRepository = appUpdateConfigRepository;
     }
 
     public AppUpdateConfigEntry getConfig() {

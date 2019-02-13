@@ -2,6 +2,10 @@ package com.abhinav.learn_spring.utils;
 
 import com.abhinav.learn_spring.exceptions.ServiceException;
 import com.abhinav.learn_spring.models.SearchOperator;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.*;
@@ -12,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class SearchHelper {
     @NotNull
     public static Map<SearchOperator, Map<String, String>> parseSearchParams(String filters) throws ServiceException {
@@ -150,7 +155,7 @@ public class SearchHelper {
                         try {
                             predicates.add(builder.equal((Expression<Date>) path, formatterShort.parse(value)));
                         } catch (ParseException e1) {
-                            //todo log the exception
+                            log.error("Failed to parse the date of Equal operator");
                         }
                     }
                 } else if (path.getJavaType().isAssignableFrom(Boolean.class)) {
@@ -170,7 +175,7 @@ public class SearchHelper {
                         try {
                             predicates.add(builder.notEqual((Expression<Date>) path, formatterShort.parse(value)));
                         } catch (ParseException e1) {
-                            //todo log the exception
+                            log.error("Failed to parse the date of Not Equal operator");
                         }
                     }
                 } else if (path.getJavaType().isAssignableFrom(Boolean.class)) {
@@ -194,7 +199,7 @@ public class SearchHelper {
                         try {
                             predicates.add(builder.greaterThan((Expression<Date>) path, formatterShort.parse(value)));
                         } catch (ParseException e1) {
-                            //todo log the exception
+                            log.error("Failed to parse the date value of Greater Than operator");
                         }
                     }
                 } else {
@@ -209,7 +214,7 @@ public class SearchHelper {
                         try {
                             predicates.add(builder.lessThan((Expression<Date>) path, formatterShort.parse(value)));
                         } catch (ParseException e1) {
-                            //todo log the exception
+                            log.error("Failed to parse the date value of Less Than operator");
                         }
                     }
                 } else {
@@ -224,7 +229,7 @@ public class SearchHelper {
                         try {
                             predicates.add(builder.greaterThanOrEqualTo((Expression<Date>) path, formatterShort.parse(value)));
                         } catch (ParseException e1) {
-                            //todo log the exception
+                            log.error("Failed to parse the date value of Greater Than Equal To operator");
                         }
                     }
                 } else {
@@ -239,7 +244,7 @@ public class SearchHelper {
                         try {
                             predicates.add(builder.lessThanOrEqualTo((Expression<Date>) path, formatterShort.parse(value)));
                         } catch (ParseException e1) {
-                            //todo log the exception
+                            log.error("Failed to parse the date value of Less Than Equal To operator");
                         }
                     }
                 } else {
@@ -267,5 +272,15 @@ public class SearchHelper {
                 }
                 break;
         }
+    }
+
+    public static Pageable getPageRequest(Integer page, Integer fetchSize, String sortBy, String sortOrder) {
+        Sort sort;
+        if (sortOrder.equals(Sort.Direction.ASC.name())) {
+            sort = new Sort(new Sort.Order(Sort.Direction.ASC, sortBy));
+        } else {
+            sort = new Sort(new Sort.Order(Sort.Direction.DESC, sortBy));
+        }
+        return new PageRequest(page, fetchSize, sort);
     }
 }

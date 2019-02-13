@@ -2,24 +2,21 @@ package com.abhinav.learn_spring.controllers;
 
 import com.abhinav.learn_spring.codes.ErrorCodes;
 import com.abhinav.learn_spring.codes.SuccessCodes;
-import com.abhinav.learn_spring.exceptions.ServiceException;
 import com.abhinav.learn_spring.models.entities.BaseEntity;
 import com.abhinav.learn_spring.models.entries.BaseEntry;
 import com.abhinav.learn_spring.models.responses.BaseResponse;
 import com.abhinav.learn_spring.models.responses.StatusResponse;
 import com.abhinav.learn_spring.services.BaseService;
+import lombok.Getter;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
 
+@Getter
 public abstract class BaseController<R extends BaseResponse, M extends BaseEntity, E extends BaseEntry> {
 
     protected BaseService<M, E> service;
-
-    protected BaseService<M, E> getService() {
-        return service;
-    }
 
     protected abstract R createResponse(List<E> entryList);
 
@@ -64,10 +61,10 @@ public abstract class BaseController<R extends BaseResponse, M extends BaseEntit
 
     @RequestMapping(value = "/search", method = RequestMethod.POST)
     public R customSearch(@RequestParam("filters") String filters,
-                                @RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
-                                @RequestParam(value = "fetchSize", defaultValue = "50", required = false) Integer fetchSize,
-                                @RequestParam(value = "sortBy", defaultValue = "id", required = false) String sortBy,
-                                @RequestParam(value = "sortOrder", defaultValue = "ASC", required = false) String sortOrder) {
+                          @RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
+                          @RequestParam(value = "fetchSize", defaultValue = "100", required = false) Integer fetchSize,
+                          @RequestParam(value = "sortBy", defaultValue = "id", required = false) String sortBy,
+                          @RequestParam(value = "sortOrder", defaultValue = "ASC", required = false) String sortOrder) {
         R response = createResponse(null);
         try {
             List<E> result = service.search(filters, page, fetchSize, sortBy, sortOrder);

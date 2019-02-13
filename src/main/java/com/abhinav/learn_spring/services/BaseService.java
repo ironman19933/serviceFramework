@@ -5,13 +5,11 @@ import com.abhinav.learn_spring.models.SearchOperator;
 import com.abhinav.learn_spring.models.SearchSpecification;
 import com.abhinav.learn_spring.models.entities.BaseEntity;
 import com.abhinav.learn_spring.models.entries.BaseEntry;
-import com.abhinav.learn_spring.models.repositories.CustomBaseRepository;
+import com.abhinav.learn_spring.models.repositories.BaseRepository;
 import com.abhinav.learn_spring.utils.SearchHelper;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +21,7 @@ public abstract class BaseService<Entity extends BaseEntity, Entry extends BaseE
 
     public JpaRepository<Entity, Long> repository;
 
-    public CustomBaseRepository<Entity> customBaseRepository;
+    public BaseRepository<Entity> baseRepository;
 
     protected abstract Entry convertToEntry(Entity entity, Entry entry);
 
@@ -45,7 +43,7 @@ public abstract class BaseService<Entity extends BaseEntity, Entry extends BaseE
     public Entry update(Entry entry, Long id) throws ServiceException {
         Entity entity = getRepository().findOne(id);
         if (Objects.isNull(entity)) {
-            throw new ServiceException("Data not found");
+            throw new ServiceException("Record not found");
         }
         entity = getRepository().save(convertToEntity(entry, entity));
         return convertToEntry(entity, null);
@@ -54,14 +52,8 @@ public abstract class BaseService<Entity extends BaseEntity, Entry extends BaseE
     @Transactional(readOnly = true)
     public List<Entry> search(String filters, Integer page, Integer fetchSize, String sortBy, String sortOrder) throws ServiceException {
         Map<SearchOperator, Map<String, String>> searchParams = SearchHelper.parseSearchParams(filters);
-        Sort sort;
-        if (sortOrder.equals("ASC")) {
-            sort = new Sort(new Sort.Order(Sort.Direction.ASC, sortBy));
-        } else {
-            sort = new Sort(new Sort.Order(Sort.Direction.DESC, sortBy));
-        }
-        Pageable pageable = new PageRequest(page, fetchSize, sort);
-        Page<Entity> resultPages = customBaseRepository.findAll(new SearchSpecification<>(searchParams), pageable);
+        Pageable pageable = SearchHelper.getPageRequest(page, fetchSize, sortBy, sortOrder);
+        Page<Entity> resultPages = baseRepository.findAll(new SearchSpecification<>(searchParams), pageable);
         return resultPages.getContent()
                 .parallelStream()
                 .map(x -> convertToEntry(x, null))
