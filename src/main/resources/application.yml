@@ -35,7 +35,7 @@ logging:
       apache:
         http: DEBUG
     root: INFO
-    com.abhinav.learn_spring: INFO
+    com.livspace.service_framework: INFO
 
 axle:
   client:

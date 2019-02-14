@@ -23,7 +23,7 @@ public class SearchHelper {
     private static final String OPERATOR_DELIMITER = "\\.";
     private static final String IN_VALUES_DELIMITER = ",";
     private static final String KEY_DELIMITER = "-";
-    
+
     @NotNull
     public static Map<SearchOperator, Map<String, String>> parseSearchParams(String filters) throws ServiceException {
         Map<SearchOperator, Map<String, String>> params = new HashMap<>();
@@ -154,7 +154,7 @@ public class SearchHelper {
             case EQUAL_TO:
                 if (path.getJavaType().isEnum()) {
                     predicates.add(path.in(Enum.valueOf(path.getJavaType(), value)));
-                } else if (path.getJavaType().isAssignableFrom(Date.class)) {
+                } else if (Date.class.isAssignableFrom(path.getJavaType())) {
                     try {
                         predicates.add(builder.equal((Expression<Date>) path, formatter.parse(value)));
                     } catch (ParseException e) {
@@ -164,7 +164,7 @@ public class SearchHelper {
                             log.error("Failed to parse the date of Equal operator");
                         }
                     }
-                } else if (path.getJavaType().isAssignableFrom(Boolean.class)) {
+                } else if (Boolean.class.isAssignableFrom(path.getJavaType())) {
                     value = value.equals("1") ? "true" : "false";
                     predicates.add(builder.equal(path, Boolean.parseBoolean(value)));
                 } else {
@@ -184,7 +184,7 @@ public class SearchHelper {
                             log.error("Failed to parse the date of Not Equal operator");
                         }
                     }
-                } else if (path.getJavaType().isAssignableFrom(Boolean.class)) {
+                } else if (Boolean.class.isAssignableFrom(path.getJavaType())) {
                     value = value.equals("1") ? "true" : "false";
                     predicates.add(builder.notEqual(path, Boolean.parseBoolean(value)));
                 } else {
@@ -198,7 +198,7 @@ public class SearchHelper {
                 predicates.add(builder.isNotNull(path));
                 break;
             case GREATER_THAN:
-                if (path.getJavaType().isAssignableFrom(Date.class)) {
+                if (Date.class.isAssignableFrom(path.getJavaType())) {
                     try {
                         predicates.add(builder.greaterThan((Expression<Date>) path, formatter.parse(value)));
                     } catch (ParseException e) {
@@ -213,7 +213,7 @@ public class SearchHelper {
                 }
                 break;
             case LESS_THAN:
-                if (path.getJavaType().isAssignableFrom(Date.class)) {
+                if (Date.class.isAssignableFrom(path.getJavaType())) {
                     try {
                         predicates.add(builder.lessThan((Expression<Date>) path, formatter.parse(value)));
                     } catch (ParseException e) {
@@ -228,7 +228,7 @@ public class SearchHelper {
                 }
                 break;
             case GREATER_THAN_EQUAL_TO:
-                if (path.getJavaType().isAssignableFrom(Date.class)) {
+                if (Date.class.isAssignableFrom(path.getJavaType())) {
                     try {
                         predicates.add(builder.greaterThanOrEqualTo((Expression<Date>) path, formatter.parse(value)));
                     } catch (ParseException e) {
@@ -243,7 +243,7 @@ public class SearchHelper {
                 }
                 break;
             case LESS_THAN_EQUAL_TO:
-                if (path.getJavaType().isAssignableFrom(Date.class)) {
+                if (Date.class.isAssignableFrom(path.getJavaType())) {
                     try {
                         predicates.add(builder.lessThanOrEqualTo((Expression<Date>) path, formatter.parse(value)));
                     } catch (ParseException e) {
@@ -260,7 +260,7 @@ public class SearchHelper {
             case LIKE:
                 if (path.getJavaType().isEnum()) {
                     predicates.add(builder.equal((Expression<String>) path, Enum.valueOf(path.getJavaType(), value)));
-                } else if (path.getJavaType().isAssignableFrom(Boolean.class)) {
+                } else if (Boolean.class.isAssignableFrom(path.getJavaType())) {
                     value = value.equals("1") ? "true" : "false";
                     predicates.add(builder.equal(path, Boolean.parseBoolean(value)));
                 } else {
@@ -270,7 +270,7 @@ public class SearchHelper {
             case NOT_LIKE:
                 if (path.getJavaType().isEnum()) {
                     predicates.add(builder.equal((Expression<String>) path, Enum.valueOf(path.getJavaType(), value)));
-                } else if (path.getJavaType().isAssignableFrom(Boolean.class)) {
+                } else if (Boolean.class.isAssignableFrom(path.getJavaType())) {
                     value = value.equals("1") ? "false" : "true";
                     predicates.add(builder.equal(path, Boolean.parseBoolean(value)));
                 } else {

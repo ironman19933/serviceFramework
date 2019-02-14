@@ -12,8 +12,6 @@ public class RabbitService {
     private RabbitTemplate rabbitTemplate;
 
     public void sendMessage(String exchange, String routingKey, Object object) {
-        log.info("abhinav-sending message to rabbitmq");
         rabbitTemplate.convertAndSend(exchange, routingKey, object);
-        log.info("abhinav-message sent to rabbitmq");
     }
 }
