@@ -8,11 +8,13 @@ import com.abhinav.learn_spring.models.responses.BaseResponse;
 import com.abhinav.learn_spring.models.responses.StatusResponse;
 import com.abhinav.learn_spring.services.BaseService;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
 
+@Slf4j
 @Getter
 public abstract class BaseController<R extends BaseResponse, M extends BaseEntity, E extends BaseEntry> {
 
@@ -71,6 +73,8 @@ public abstract class BaseController<R extends BaseResponse, M extends BaseEntit
             response = createResponse(result);
             response.setStatus(new StatusResponse(SuccessCodes.DATA_RETRIEVED_SUCCESSFULLY, result.size()));
         } catch (Exception e) {
+            e.printStackTrace();
+            log.error("Error Occurrec {}", e.getMessage());
             response.setStatus(new StatusResponse(ErrorCodes.GENERIC_ERROR_OCCURRED.getCode(), e.getMessage(), StatusResponse.Type.ERROR, 1));
         }
         return response;

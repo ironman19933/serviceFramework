@@ -132,8 +132,8 @@ public class SearchHelper {
     private static void addPredicate(SearchOperator searchOperator, String key, String value, Root root, List<Predicate> predicates, CriteriaBuilder builder) {
         DateFormat formatter = new SimpleDateFormat(Constants.SEARCH_DATE_FORMAT_LONG);
         DateFormat formatterShort = new SimpleDateFormat(Constants.SEARCH_DATE_FORMAT_SHORT);
-        Path path = root;
-        path = path.get(key);
+
+        Path path = getPath(key, root);
 
         switch (searchOperator) {
             case IN:
@@ -162,7 +162,7 @@ public class SearchHelper {
                     value = value.equals("1") ? "true" : "false";
                     predicates.add(builder.equal(path, Boolean.parseBoolean(value)));
                 } else {
-                    predicates.add(path.in(value));
+                    predicates.add(builder.equal(path, value));
                 }
                 break;
             case NOT_EQUAL_TO:
@@ -272,6 +272,26 @@ public class SearchHelper {
                 }
                 break;
         }
+    }
+
+    private static Path getPath(String key, Root root) {
+        Path path = root;
+        String secondKey;
+        Integer index = key.indexOf("-");
+        if (index > -1) {
+            String[] data = key.split("-");
+            key = data[0];
+            secondKey = data[1];
+            path = path.get(key);
+            if (Collection.class.isAssignableFrom(path.getJavaType())) {
+                path = root.join(key).get(secondKey);
+            } else {
+                path = path.get(secondKey);
+            }
+        } else {
+            path = path.get(key);
+        }
+        return path;
     }
 
     public static Pageable getPageRequest(Integer page, Integer fetchSize, String sortBy, String sortOrder) {

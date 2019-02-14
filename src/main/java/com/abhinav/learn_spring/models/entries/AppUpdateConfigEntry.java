@@ -14,4 +14,5 @@ public class AppUpdateConfigEntry extends BaseEntry {
     private String downloadUrl;
     private UpdateType updateType;
     private Boolean deleted;
+    private List<AppUpdateDetailEntry> appUpdateDetail;
 }

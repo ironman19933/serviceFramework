@@ -30,4 +30,7 @@ public class AppUpdateConfigEntity extends BaseEntity {
 
     @Column(name = "deleted")
     private Boolean deleted;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "appUpdateConfigEntity")
+    private List<AppUpdateDetailEntity> appUpdateDetail;
 }
