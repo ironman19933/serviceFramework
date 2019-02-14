@@ -18,6 +18,12 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class SearchHelper {
+    private static final String SEARCH_DELIMITER = ";";
+    private static final String KEY_VALUE_DELIMITER = ":";
+    private static final String OPERATOR_DELIMITER = "\\.";
+    private static final String IN_VALUES_DELIMITER = ",";
+    private static final String KEY_DELIMITER = "-";
+    
     @NotNull
     public static Map<SearchOperator, Map<String, String>> parseSearchParams(String filters) throws ServiceException {
         Map<SearchOperator, Map<String, String>> params = new HashMap<>();
@@ -36,20 +42,20 @@ public class SearchHelper {
         if (StringUtils.isEmpty(filters)) {
             return params;
         } else {
-            String[] filterArray = filters.split(";");
+            String[] filterArray = filters.split(SEARCH_DELIMITER);
             for (String filter : filterArray) {
                 try {
                     String key, value;
-                    Integer index = filter.indexOf(":");
+                    Integer index = filter.indexOf(KEY_VALUE_DELIMITER);
                     if (index == -1) {
                         key = filter;
                         value = null;
                     } else {
-                        String[] splitFilter = filter.split(":");
+                        String[] splitFilter = filter.split(KEY_VALUE_DELIMITER);
                         value = splitFilter[1];
                         key = splitFilter[0];
                     }
-                    String[] keyAndOperator = key.split("\\.");
+                    String[] keyAndOperator = key.split(OPERATOR_DELIMITER);
                     String keyName = keyAndOperator[0];
                     String operator = keyAndOperator[1];
                     SearchOperator searchOperator = SearchOperator.value(operator);
@@ -137,7 +143,7 @@ public class SearchHelper {
 
         switch (searchOperator) {
             case IN:
-                Set<String> values = new HashSet<>(Arrays.asList(value.split(",")));
+                Set<String> values = new HashSet<>(Arrays.asList(value.split(IN_VALUES_DELIMITER)));
                 if (path.getJavaType().isEnum()) {
                     Collection<?> filterValuesList = getFilterEnum(path.getJavaType(), values);
                     predicates.add(path.in(filterValuesList));
@@ -276,12 +282,11 @@ public class SearchHelper {
 
     private static Path getPath(String key, Root root) {
         Path path = root;
-        String secondKey;
-        Integer index = key.indexOf("-");
+        Integer index = key.indexOf(KEY_DELIMITER);
         if (index > -1) {
-            String[] data = key.split("-");
+            String[] data = key.split(KEY_DELIMITER);
             key = data[0];
-            secondKey = data[1];
+            String secondKey = data[1];
             path = path.get(key);
             if (Collection.class.isAssignableFrom(path.getJavaType())) {
                 path = root.join(key).get(secondKey);
