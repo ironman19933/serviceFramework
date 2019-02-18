@@ -60,4 +60,18 @@ public class AppConfigController extends BaseController<AppUpdateConfigResponse,
         }
         return finalResponse;
     }
+
+    @RequestMapping(value = "/abhinav/{id}/{name}", method = RequestMethod.GET)
+    public AppUpdateConfigResponse abhinav(@PathVariable(name = "id") Long id, @PathVariable(name = "name") String name) {
+        AppUpdateConfigResponse finalResponse = new AppUpdateConfigResponse();
+        try {
+            AppUpdateConfigEntry entry = ((AppConfigService) service).abhinav(id, name);
+            finalResponse.setAppUpdateConfigEntries(Collections.singletonList(entry));
+            finalResponse.setStatus(new StatusResponse(12, "App Config is retrieved successfully", StatusResponse.Type.SUCCESS, 1));
+        } catch (Exception e) {
+            log.error("Error Occurred: {}", e.getMessage());
+            finalResponse.setStatus(new StatusResponse(13, "Error Occurred", StatusResponse.Type.ERROR, 1));
+        }
+        return finalResponse;
+    }
 }

@@ -2,6 +2,7 @@ buildscript {
     ext {
         springBootVersion = '2.0.4.RELEASE'
         queryDslVersion = '4.2.1'
+        javaGeneratedSources = file("$rootDir/src/main/java")
     }
     repositories {
         mavenCentral()
@@ -25,11 +26,13 @@ mainClassName = 'com.abhinav.learn_spring.LearnSpringApplication'
 apply plugin: 'java-library'
 apply plugin: 'idea'
 
+/*
 idea {
     module {
         sourceDirs += file('generated/')
     }
 }
+*/
 
 group = 'com.abhinav'
 version = '0.0.1-SNAPSHOT'
@@ -41,9 +44,16 @@ repositories {
 
 
 compileJava {
+    doFirst {
+        javaGeneratedSources.mkdirs()
+    }
+
     options.compilerArgs = [
             "-proc:only",
             "-processor", "com.mysema.query.apt.jpa.JPAAnnotationProcessor"
+    ]
+    options.compilerArgs += [
+            '-parameters', '-s', javaGeneratedSources
     ]
 }
 

@@ -29,7 +29,7 @@ public abstract class BaseService<Entity extends BaseEntity, Entry extends BaseE
 
     @Transactional(readOnly = true)
     public Entry find(Long id) {
-        return convertToEntry(getRepository().findOne(id), null);
+        return convertToEntry(getRepository().getOne(id), null);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -41,7 +41,7 @@ public abstract class BaseService<Entity extends BaseEntity, Entry extends BaseE
 
     @Transactional(rollbackFor = Exception.class)
     public Entry update(Entry entry, Long id) throws ServiceException {
-        Entity entity = getRepository().findOne(id);
+        Entity entity = getRepository().getOne(id);
         if (Objects.isNull(entity)) {
             throw new ServiceException("Record not found");
         }
